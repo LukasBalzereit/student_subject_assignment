@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"/>
+    <!--  <link rel="stylesheet" type="text/css" href="/css/stylesheet.css" th:href="@{/css/stylesheet.css}" media="all"/> -->
+    <!--  <meta charset=UTF-8"/> -->
+    <title>add student</title> <!-- noch anpassen mit Subject-speziefischen Text-->
+</head>
+<body>
+    <div class="container">
+       <!-- <input type="text" th:field="*{name}" /> -->
+         <table class="table  table-bordered table-fixed data-link=row">
+            <tr th:each="topic, iter : ${subject.topics}">
+                <td th:text="${topic}">topicName</td>
+                <td th:text="${iter.index}"></td>
+                <td th:text="${student.ratings[iter.index]}"></td>
+               <!-- <td >
+                    <input type="radio" th:field="" th:value="1" />
+                </td> -->
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

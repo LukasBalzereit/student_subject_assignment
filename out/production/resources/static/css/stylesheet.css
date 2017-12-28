@@ -1,0 +1,16 @@
+h1{
+    color:green;
+    font-size: 220%; /*Percent for scalability*/
+}
+
+body{ /* everything inside body (also tables in the body)*/
+    font-size: 120%;
+  /*  align-content: center;*/
+}
+
+table{
+    border-collapse: collapse; /* no double borders (table - content) (content-content)*/
+}
+table,th,td{
+    border: 1px solid black;
+}

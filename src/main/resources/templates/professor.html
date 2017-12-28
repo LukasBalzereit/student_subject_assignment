@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"/>
+    <!--  <link rel="stylesheet" type="text/css" href="/css/stylesheet.css" th:href="@{/css/stylesheet.css}" media="all"/> -->
+    <!--  <meta charset=UTF-8"/> -->
+    <title>Prof Page</title> <!-- noch anpassen mit Subject-speziefischen Text-->
+</head>
+
+<body>
+<div class="container">
+    <h1 th:text="'Overview ' + ${professor.name}"/>
+
+    <table class="table  table-bordered table-fixed data-link=row">
+        <thead>
+            <tr>
+                <th class="col-md-4">Name</th>
+                <th class="col-md-1">Released</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="subject : ${professor.subjects}" >
+                <td th:text="${subject.name}"></td>
+                <td th:text="${subject.released}" />
+                <td class="col-md-1">
+                    <form th:action="@{/professor/subject(id=${subject.id}) }" method="post">
+                        <div class="form-group">
+
+                         <!--   <input type="hidden" id="id" name="id" th:field="${subject.id}"/> -->
+                            <input type="submit" class="btn btn-primary btn-sm" value="details"/>
+                        </div>
+                    </form>
+                </td>
+                <td class="col-md-1">Delete-Button </td>
+            </tr>
+        </tbody>
+    </table>
+    <form th:action="@{/professor/subject/add }" method="post" >
+            <div class="form-group">
+                <input type="hidden" name="id" id="id" value="0"/>
+                <input type="submit" class="btn btn-primary btn-sm" value="New subject"/>
+            </div>
+    </form>
+</div>
+</body>
+
+
+</html>

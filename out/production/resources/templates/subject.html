@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"/>
+      <!--  <link rel="stylesheet" type="text/css" href="/css/stylesheet.css" th:href="@{/css/stylesheet.css}" media="all"/> -->
+        <!--  <meta charset=UTF-8"/> -->
+        <title> Subject Page</title> <!-- noch anpassen mit Subject-speziefischen Text-->
+    </head>
+
+    <body>
+    <div class="container">
+        <h1 th:text="'Name: ' + ${subject.name}"/>
+    <!--
+        <ul th:each="topic : ${subject.topicArray}">
+            <li th:text="${topic}">Kein Thema</li>
+    </ul> -->
+        <table class="table  table-bordered table-fixed data-link=row">
+            <tr th:each="topic : ${subject.topics}">
+                <td th:text="${topic}"></td>
+            </tr>
+        </table>
+        <br/>
+
+
+    </div>
+      <!--  <table class="table table-bordered table-fixed data-link=row">
+            <tr th:each="studentEntry : ${subject.studentMap}">
+                <td th:text="${studentEntry.key}"></td>
+                <td> zweite Zeile </td>
+            </tr>
+        </table> -->
+    </body>
+
+
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"/>
+    <!--  <link rel="stylesheet" type="text/css" href="/css/stylesheet.css" th:href="@{/css/stylesheet.css}" media="all"/> -->
+    <!--  <meta charset=UTF-8"/> -->
+    <title>add subject</title> <!-- noch anpassen mit Subject-speziefischen Text-->
+</head>
+<body>
+    <div class="container">
+        <div th:if="${subject == null}">
+
+            <form th:action="@{/professor/subject/add/newName }" method="post" >
+                <div class="form-group">
+                    <div class="col-xs-4">
+                    <label for="name">Name of this subject</label>
+                    <input class="form-control" type="text" id="name" name="name" required="required"/>
+                    <input type="submit" class="btn btn-primary btn-sm" value="New subject"/>
+                </div>
+                </div>
+            </form>
+        </div>
+
+        <div th:unless="${subject == null}">
+            <h2 th:text="${subject.name}" />
+
+            <form th:action="@{/professor/subject/add/newTopic ( id=${subject.id}) }" method="post" >
+                <div class="form-group">
+                    <input class="form-control" type="text" id="topic" name="topic" th:value="${topic}" required="required"/>
+                    <input type="submit" class="btn btn-primary btn-sm" value="Add topic"/>
+                </div>
+            </form>
+
+            <table class="table  table-bordered table-fixed data-link=row">
+                <tr th:each="topic : ${subject.topicsList}">
+                    <td th:text="${topic}">topic</td>
+                </tr>
+            </table>
+
+            <form th:action="@{/professor/subject/add/release }" method="post" >
+                <div class="form-group">
+                    <input type="hidden" name="id" id="id" th:value="${subject.id}" />
+                    <input type="submit" class="btn btn-primary btn-sm" value="Release" th:disabled="${#lists.size(subject.topicsList) lt 2}"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
