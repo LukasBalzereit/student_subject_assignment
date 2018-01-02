@@ -1,20 +1,24 @@
 package lb.ssa.ssa.domain;
 
-import org.springframework.data.repository.cdi.Eager;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Entity
 public class Professor implements Serializable{
 
     @Id
+    @GeneratedValue
+    private int id;
+
+    @Column(unique = true)
     private String name;
+
+    private String hashedPassword;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "professor")
     private List<Subject> subjects;
@@ -26,6 +30,17 @@ public class Professor implements Serializable{
         this.name = name;
     }
 
+    public String getHashedPassword() {
+        return hashedPassword;
+    }
+
+    public Professor addUnhashedPassword(String unhashedPassword){
+        hashedPassword = new BCryptPasswordEncoder().encode(unhashedPassword);
+        return this;
+    }
+    public void setHashedPassword(String hashedPassword) {
+        this.hashedPassword = hashedPassword;
+    }
 
     public Professor addSubject(Subject subject){
         subjects.add(subject);
@@ -59,11 +74,9 @@ public class Professor implements Serializable{
     }
 
 
-    //    public void removeSubject(String name){
-//        Optional<Subject> subject = findSubject(name);
-//        if(subject.isPresent())
-//            subjectList.remove(subject);
-//    }
+        public void removeSubject(String name){
+            subjects.remove(name);
+        }
 
 //    private Optional<Subject> findSubject(String name){
 //        return subjectList.stream()

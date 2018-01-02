@@ -6,6 +6,7 @@ import lb.ssa.ssa.domain.Subject;
 import java.util.Optional;
 
 public interface ProfessorService {
+
 }
 
 

@@ -9,23 +9,47 @@
 </head>
 <body>
     <div class="container">
+        <div class="form-group">
+        <form th:action="@{/professor}">
+                <div class="form-group ">
+                    <input type="submit" class="btn btn-primary btn-sm pull-right" value="Back" />
+                </div>
+        </form>
+        </div>
+        <div class="form-group">
+        <form th:action="@{/logout}" method="post">
+                <div class="form-group ">
+                    <input type="submit" class="btn btn-primary btn-sm pull-right" value="Logout" />
+                </div>
+        </form>
+        </div>
+
         <div th:if="${subject == null}">
 
             <form th:action="@{/professor/subject/add/newName }" method="post" >
                 <div class="form-group">
-                    <div class="col-xs-4">
-                    <label for="name">Name of this subject</label>
-                    <input class="form-control" type="text" id="name" name="name" required="required"/>
-                    <input type="submit" class="btn btn-primary btn-sm" value="New subject"/>
-                </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input class="form-control" type="text" id="name" name="name" required="required"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password (not required)</label>
+                            <input class="form-control" type="text" id="password" name="password" />
+                        </div>
+                        <div class="form-group">
+                             <input type="submit" class="btn btn-primary btn-sm" value="New subject"/>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
 
+
         <div th:unless="${subject == null}">
             <h2 th:text="${subject.name}" />
 
-            <form th:action="@{/professor/subject/add/newTopic ( id=${subject.id}) }" method="post" >
+            <form th:action="@{/professor/subject/add/newTopic ( id=${subject.id} ) }" method="post" >
                 <div class="form-group">
                     <input class="form-control" type="text" id="topic" name="topic" th:value="${topic}" required="required"/>
                     <input type="submit" class="btn btn-primary btn-sm" value="Add topic"/>
@@ -34,7 +58,12 @@
 
             <table class="table  table-bordered table-fixed data-link=row">
                 <tr th:each="topic : ${subject.topicsList}">
-                    <td th:text="${topic}">topic</td>
+                    <td  th:text="${topic}">topic</td>
+                    <td class="col-md-1">
+                        <form th:action="@{/professor/subject/add/removeTopic (topic=${topic}, id=${subject.id})}" method="post">
+                            <input type="submit" class="btn btn-danger btn-md" value="Delete" />
+                        </form>
+                    </td>
                 </tr>
             </table>
 
@@ -44,6 +73,8 @@
                     <input type="submit" class="btn btn-primary btn-sm" value="Release" th:disabled="${#lists.size(subject.topicsList) lt 2}"/>
                 </div>
             </form>
+
+
         </div>
     </div>
 </body>

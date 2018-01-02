@@ -1,7 +1,11 @@
 package lb.ssa.ssa.domain;
 
 import lb.ssa.ssa.domain.Solver.MunkresSolver;
+import lb.ssa.ssa.domain.Solver.Result;
 import org.junit.Test;
+
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 
 import static org.junit.Assert.*;
 
@@ -36,7 +40,7 @@ public class MunkresSolverTest {
                 {74,18,39,43}
         };
 
-        int[][] e = { //0,1 ; 1,2 ; 3,0 ; 3,3 | 142
+        int[][] e = { //min: 0,1 ; 1,2 ; 3,0 ; 3,3 | 142 max: 0,0 ; 1,3 ; 2,2 ; 3,2
                 {42,40,55,40},
                 {38,29,42,68},
                 {5,70,75,39},
@@ -55,30 +59,39 @@ public class MunkresSolverTest {
                 { 58, 37, 54, 52, 84, 16, 34, 5, 72, 26 } };
 
 
-        int[][] a1 = {{1,3,2},{1,25,3}};
+        int[][] a1 = {{1,2,1,4},{3,1,1,2}};
         String[] a1Rows = {"a1","a2"};
-        String[] a1Cols = {"a11","a22", "a33"};
+        String[] a1Cols = {"a11","a22", "a33","a444"};
 
-        MunkresSolver testSolverA = new MunkresSolver(a);
-        MunkresSolver testSolverA1 = new MunkresSolver(a1,a1Rows, a1Cols);
+        MunkresSolver testSolverA = new MunkresSolver(a,false);
+        MunkresSolver testSolverA1 = new MunkresSolver(a1,a1Rows, a1Cols,false);
         testSolverA.solve();
-        testSolverA1.solve();
+        Result rA1 =testSolverA1.solve();
+//        try(PrintWriter out = new PrintWriter("src/main/resources/result.csv")){
+//            out.print(rA1.toString());
+//        } catch (FileNotFoundException ea) {
+//            ea.printStackTrace();
+//        }
 
-		MunkresSolver testSolverB = new MunkresSolver(b);
-		MunkresSolver testSolverC = new MunkresSolver(c);
-		MunkresSolver testSolver = new MunkresSolver(c1);
-		MunkresSolver testSolverD = new MunkresSolver(d);
-		MunkresSolver testSolverE = new MunkresSolver(e);
-		MunkresSolver testSolverF = new MunkresSolver(f);
+
+        MunkresSolver testSolverB = new MunkresSolver(b,false);
+		MunkresSolver testSolverC = new MunkresSolver(c,false);
+		MunkresSolver testSolver = new MunkresSolver(c1,false);
+		MunkresSolver testSolverD = new MunkresSolver(d,false);
+		MunkresSolver testSolverE = new MunkresSolver(e,false);
+        MunkresSolver testSolverEmax = new MunkresSolver(e,true);
+		MunkresSolver testSolverF = new MunkresSolver(f,false);
 
         //Compared with solutions from http://hungarianalgorithm.com/solve.php
         //
-		assertEquals(testSolverB.solve().getSum(),92);
-		assertEquals(testSolver.solve().getSum(),22);
-		assertEquals(testSolverC.solve().getSum(),140);
-		assertEquals(testSolverD.solve().getSum(),164);
-		assertEquals(testSolverE.solve().getSum(),142);
-        assertEquals(testSolverF.solve().getSum(),67);
+		assertEquals(92, testSolverB.solve().getSum());
+		assertEquals(22, testSolver.solve().getSum());
+		assertEquals(140, testSolverC.solve().getSum());
+		assertEquals(164, testSolverD.solve().getSum());
+		assertEquals(142, testSolverE.solve().getSum());
+        assertEquals(272, testSolverEmax.solve().getSum());
+
+        assertEquals(67, testSolverF.solve().getSum(),67);
 //
 
     }

@@ -32,8 +32,8 @@ public class MunkresSolver {
      * @param rowLabel labels for rows, length has to match the array.length (if not square) or columnLabel.length (square)
      * @param columnLabel labels for columns
      */
-    public MunkresSolver(int[][] array, String[] rowLabel, String[] columnLabel) {
-        this(array);
+    public MunkresSolver(int[][] array, String[] rowLabel, String[] columnLabel, boolean maximize) {
+        this(array, maximize);
         this.rowLabel = rowLabel;
         this.columnLabel = columnLabel;
         if (!(((rowLabel.length == array.length) || (rowLabel.length == solvingArray.length)) || (columnLabel.length == solvingArray[0].length)))
@@ -44,11 +44,15 @@ public class MunkresSolver {
      *Constructs MunkresSolver
      * @param array
      */
-    public MunkresSolver(int[][] array) {
+    public MunkresSolver(int[][] array, boolean maximize) {
         this.solvingArray = makeSquare(array);
-        //!: dummy (generated) rows of the comparisonArray are changed equally to the ones in the solvingArray
-        //irrelevant for solution, as dummy rows are not considered in creating the map of solution-labels (see createSolution())
-        this.comparisonArray = solvingArray.clone();
+        //copy 2D solvingArray to comparisonArray
+        comparisonArray = new int[solvingArray.length][];
+        for (int i = 0; i < solvingArray.length; i++) {
+            comparisonArray[i] = solvingArray[i].clone();
+        }
+        //convert minimisation problem into maximisation problem
+        if(maximize) convertMaximisation();
         coveredRows = new ArrayList<>();
         coveredColumns = new ArrayList<>();
     }
@@ -151,6 +155,17 @@ public class MunkresSolver {
         return Arrays.stream(array)  //Stream because asList() doesn't work with primitives
                 .boxed() // intStream -> Stream<Integer>
                 .collect(Collectors.toList());  //list because array.length doesn't recognize empty elements
+    }
+
+    //every element of the solvingArray * (-1) (to convert minimisation to maximisation problem)
+    private void convertMaximisation() {
+        for (int iRow = 0; iRow < solvingArray.length; iRow++) {
+            for (int iCol = 0; iCol < solvingArray[0].length; iCol++) {
+                //every element of solvingArray
+                solvingArray[iRow][iCol] *= -1;
+            }
+        }
+        //Arrays.stream(solvingArray).flatMapToInt(Arrays::stream).map(i -> i= -i).toArray(new int[]);
     }
 
     /**
@@ -271,7 +286,12 @@ public class MunkresSolver {
      * are added at the end.
      * @throws IllegalArgumentException if there are more rows than columns
      */
-    private int[][] makeSquare(int[][] array) {
+    private int[][] makeSquare(int[][] arrayParam) {
+        //copies 2d-array so argument-array doesn't get changed
+        int[][] array = new int[arrayParam.length][];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = arrayParam[i].clone();
+        }
         //length of the longest row (to prevent indexOutOfBoundsExceptions), shorter rows will be filled with 0s
         int columns = Arrays.stream(array)
                 .mapToInt(row -> row.length)

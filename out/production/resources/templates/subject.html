@@ -10,26 +10,68 @@
 
     <body>
     <div class="container">
-        <h1 th:text="'Name: ' + ${subject.name}"/>
+        <form th:action="@{/professor}">
+            <div class="form-group ">
+                <input type="submit" class="btn btn-primary btn-sm pull-right" value="Back" />
+            </div>
+        </form>
+        <div class="form-group">
+        <form th:action="@{/logout}" method="post">
+            <div class="form-group ">
+                <input type="submit" class="btn btn-primary btn-sm pull-right" value="Logout" />
+            </div>
+        </form>
+        </div>
+
+        <h1 th:text="'Name: ' + ${subject.name}">Name</h1>
     <!--
         <ul th:each="topic : ${subject.topicArray}">
             <li th:text="${topic}">Kein Thema</li>
     </ul> -->
         <table class="table  table-bordered table-fixed data-link=row">
+            <thead>
+                <tr>
+                    <th>Topic</th>
+                </tr>
+            </thead>
             <tr th:each="topic : ${subject.topics}">
-                <td th:text="${topic}"></td>
+                <td th:text="${topic}">topic name</td>
             </tr>
         </table>
         <br/>
 
 
-    </div>
-      <!--  <table class="table table-bordered table-fixed data-link=row">
-            <tr th:each="studentEntry : ${subject.studentMap}">
-                <td th:text="${studentEntry.key}"></td>
-                <td> zweite Zeile </td>
+
+       <table class="table table-bordered table-fixed data-link=row">
+           <thead>
+                <tr>
+                    <th>Student</th>
+                </tr>
+           </thead>
+           <tbody>
+           <tr th:each="student : ${subject.studentList}" >
+                <td th:text="${student.name}"></td>
+                <td th:each="rating : ${student.ratings}">
+                    <p th:text="${rating}" >rating</p>
+                </td>
+                <td class="col-md-1">
+                    <form th:action="@{/professor/subject/removeStudent (id=${student.id}) }" method="post" >
+                        <div class="form-group">
+                            <input type="submit" class="btn btn-danger btn-md" value="Delete"/>
+                        </div>
+                    </form>
+                </td>
             </tr>
-        </table> -->
+           </tbody>
+        </table>
+
+       <form th:action="@{/professor/subject/resolve}" method="post" >
+                <div class="form-group">
+                    <input type="hidden" name="id" id="id" th:value="${subject.id}" />
+                    <input type="submit" class="btn btn-primary btn-sm" value="Resolve" th:disabled="${#lists.size(subject.studentList) lt 1}" />
+                </div>
+       </form>
+    </div>
     </body>
 
 

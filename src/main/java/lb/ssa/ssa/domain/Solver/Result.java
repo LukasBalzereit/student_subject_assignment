@@ -4,21 +4,22 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-public class Result<K> {
+public class Result {
     /**
      * <Row, Column> of the optimal solution. Index or if available custom labels.
      */
-    private Map<K, K> solution;
+    private Map<String, String> solution;
     /**
      * Rows which were not able to be matched to any columns (if length didn't match)
      */
-    private List<K> noMatch;
+    private List<String> noMatch;
     private int sum;
     private double average;
     private long duration;
 
-    public Result(Map<K,K> solution, List<K> noMatch, int sum, long duration){
+    public Result(Map<String,String> solution, List<String> noMatch, int sum, long duration){
         this.noMatch = noMatch;
         this.solution = solution;
         this.sum = sum;
@@ -27,18 +28,36 @@ public class Result<K> {
     }
 
     public String toString(){
-        String map = solution.toString();
-        String set = " no match: " + noMatch;
-        String sum = "sum: " + this.sum +"; avg: " + average;
+        String map = "matched:\n" + mapToString(solution);
+        String set = "\n\nno match:\n" + listToString(noMatch);
+        String sum = "\nsum: " + this.sum +";avg: " + average;
         String time = "time: " + duration + " ms ";
         return map + set +"\n"+ sum + "\n" + time;
     }
 
-    public Map<K, K> getSolution() {
+    /**
+     * makes Map.toString() easier to read by using ";" which are different datacells if opened as .csv file (LibreOffice Calc, MS Exel)
+     * @param map
+     * @return
+     */
+    private String mapToString(Map<String, String> map){
+        return solution.entrySet().stream()
+                                .map(entry -> entry.getKey() + ";" + entry.getValue())
+                                .collect(Collectors.joining(System.getProperty("line.separator")));
+    }
+    private String listToString(List<String> list){
+        if(list == null )
+            return "";
+        else
+            return list.stream()
+                    .collect(Collectors.joining(System.getProperty("line.separator")));
+    }
+
+    public Map<String, String> getSolution() {
         return solution;
     }
 
-    public List<K> getNoMatch() {
+    public List<String> getNoMatch() {
         return noMatch;
     }
 
