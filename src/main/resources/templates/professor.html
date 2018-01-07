@@ -10,7 +10,7 @@
 
 <body>
 <div class="container">
-    <h1 th:text="'Overview ' + ${professor.name}"/>
+    <h1 th:text=" ${professor.name}"/>
     <div class="form-group">
         <form th:action="@{/logout}" method="post">
             <div class="form-group ">
@@ -30,7 +30,15 @@
         <tbody>
             <tr th:each="subject : ${professor.subjects}" >
                 <td th:text="${subject.name}"></td>
-                <td th:text="${subject.released}" />
+
+                <div th:unless="${subject.released}">
+                    <td th:text="${subject.released}" />
+                </div>
+                <div th:if="${subject.released}">
+                    <td th:text="${#lists.size(subject.studentList)} + ' / ' + ${#lists.size(subject.topicsList)}">
+                    </td>
+                </div>
+
                 <td class="col-md-1">
                     <form th:action="@{/professor/subject(id=${subject.id}) }" method="post">
                         <div class="form-group">

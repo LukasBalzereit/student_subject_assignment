@@ -11,11 +11,12 @@ buildscript {
 }
 
 apply plugin: 'java'
+apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 
-group = 'lb.ssa'
-version = '0.0.1-SNAPSHOT'
+group = 'ssa.ssa'
+version = '0.1.1'
 sourceCompatibility = 1.8
 
 repositories {
@@ -28,7 +29,7 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-security')
 	compile('org.springframework.boot:spring-boot-starter-thymeleaf')
 	compile('org.springframework.boot:spring-boot-starter-web')
-	runtime('com.h2database:h2')
+	runtime('org.hsqldb:hsqldb')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('org.springframework.security:spring-security-test')
 }

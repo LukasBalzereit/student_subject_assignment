@@ -9,18 +9,16 @@
 </head>
 <body>
     <div class="container">
-        <div class="form-group">
         <form th:action="@{/professor}">
-                <div class="form-group ">
-                    <input type="submit" class="btn btn-primary btn-sm pull-right" value="Back" />
-                </div>
+            <div class="form-group ">
+                <input type="submit" class="btn btn-primary btn-sm pull-right" value="Back" />
+            </div>
         </form>
-        </div>
         <div class="form-group">
         <form th:action="@{/logout}" method="post">
-                <div class="form-group ">
-                    <input type="submit" class="btn btn-primary btn-sm pull-right" value="Logout" />
-                </div>
+            <div class="form-group ">
+                <input type="submit" class="btn btn-primary btn-sm pull-right" value="Logout" />
+            </div>
         </form>
         </div>
 
@@ -51,7 +49,9 @@
 
             <form th:action="@{/professor/subject/add/newTopic ( id=${subject.id} ) }" method="post" >
                 <div class="form-group">
-                    <input class="form-control" type="text" id="topic" name="topic" th:value="${topic}" required="required"/>
+                    <div class="form-group">
+                        <input class="form-control" type="text" autofocus="autofocus" id="topic" name="topic" th:value="${topic}" required="required"/>
+                    </div>
                     <input type="submit" class="btn btn-primary btn-sm" value="Add topic"/>
                 </div>
             </form>
@@ -70,7 +70,7 @@
             <form th:action="@{/professor/subject/add/release }" method="post" >
                 <div class="form-group">
                     <input type="hidden" name="id" id="id" th:value="${subject.id}" />
-                    <input type="submit" class="btn btn-primary btn-sm" value="Release" th:disabled="${#lists.size(subject.topicsList) lt 2}"/>
+                    <input type="submit" class="btn btn-primary btn-sm" value="Release" th:disabled="${#lists.size(subject.topicsList) lt 1}"/>
                 </div>
             </form>
 

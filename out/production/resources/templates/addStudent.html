@@ -5,25 +5,29 @@
     <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"/> -->
     <!--  <link rel="stylesheet" type="text/css" href="/css/stylesheet.css" th:href="@{/css/stylesheet.css}" media="all"/> -->
     <!--  <meta charset=UTF-8"/> -->
-    <title>add student</title> <!-- noch anpassen mit Subject-speziefischen Text-->
+    <title>student</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
     <div class="container">
         <form th:action="@{/student}" method="post" th:object="${student}" role="form ">
-           <!-- <h1 th:text="${student.subject.name}">subject name</h1> -->
+            <h1 th:text="${subject.name}">subject name</h1>
 
             <input th:type="hidden" th:field="*{subjectId}" th:value="${subject.id}" />
-
-            <div class="col-xs-4">
-            <label for="name">Student name:</label>
-            <input class="form-control" type="text" id="name" th:field="*{name}" required="required" />
+            <div class="row">
+                <div class="col-xs-4 form-group" >
+                    <label for="name">Student name:</label>
+                    <input class="form-control" type="text" id="name" th:field="*{name}" required="required" />
+                </div>
             </div>
-
             <table class="table  table-bordered ">
                 <thead>
                     <tr>
-                        <th class="col-8">Topicname</th>
-                        <th class="col-4">
+                        <th>How would you like to write a paper about the following topics ?:</th>
+                    </tr>
+                    <tr>
+                        <th class="col-8">Topic</th>
+                        <th class="col-lg-4">
                             <div class="col-xs-3 text-center">++</div>
                             <div class="col-xs-3 text-center">+</div>
                             <div class="col-xs-3 text-center">-</div>
@@ -34,7 +38,7 @@
                 <tbody>
                     <tr th:each="topic, stat : ${subject.topics}">
                         <td th:text="${topic}">topic name</td>
-                        <td>
+                        <td >
                             <div class="col-xs-3 text-center"><input type="radio" th:field="*{ratings[__${stat.index}__]}" value="3" name="rating"/></div>
                             <div class="col-xs-3 text-center"><input type="radio" th:field="*{ratings[__${stat.index}__]}" value="2" name="rating"/></div>
                             <div class="col-xs-3 text-center"><input type="radio" th:field="*{ratings[__${stat.index}__]}" value="1" name="rating"/></div>
@@ -44,7 +48,7 @@
                 </tbody>
 
             </table>
-            <input type="submit" class="btn btn-primary btn-sm" value="..." />
+            <input type="submit" class="btn btn-primary btn-sm" value="Submit" />
         </form>
 
 
