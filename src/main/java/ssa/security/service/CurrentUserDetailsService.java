@@ -19,6 +19,7 @@ public class CurrentUserDetailsService implements UserDetailsService{
     @Autowired
     ProfessorRepository professorRepository;
 
+
     @Override
     public CurrentUser loadUserByUsername(String username) throws UsernameNotFoundException {
         CurrentUser currentUser ;
@@ -30,9 +31,11 @@ public class CurrentUserDetailsService implements UserDetailsService{
             Professor professor = professorRepository.findByName(username);
             if (professor != null)
                 currentUser = new CurrentUser(username, professor.getHashedPassword(), Role.PROFESSOR);
-            else
+            else {
                 throw new UsernameNotFoundException("");
+            }
         }
         return currentUser ;
     }
+
 }

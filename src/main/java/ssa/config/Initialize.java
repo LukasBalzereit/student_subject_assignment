@@ -38,7 +38,6 @@ public class Initialize {
 
        if(deleteString != null){
            if(deleteString.equals("all")){
-               //professorRepository.findAll().forEach(professorService::deleteProfessor);
                studentRepository.deleteAll();
                subjectRepository.deleteAll();
                professorRepository.deleteAll();

@@ -12,7 +12,8 @@ public class StudentServiceImpl implements StudentService {
     StudentRepository studentRepository;
 
     @Override
-    public void removeStudent(Student student) {
+    public void removeStudent(int id) {
+        Student student = studentRepository.findOne(id);
         student.getSubject().getStudentList().remove(student);
         studentRepository.delete(student);
     }
@@ -23,6 +24,5 @@ public class StudentServiceImpl implements StudentService {
         Student student = new Student(form, subject);
         studentRepository.save(student);
         subject.addStudent(student);
-        //subjectRepository.save(subject);
     }
 }

@@ -18,7 +18,6 @@ public class ProfessorServiceImpl implements ProfessorService {
 
     @Override
     public void deleteProfessor(Professor professor) {
-        //professor.getSubjects().forEach(subjectRepository::delete);
         subjectRepository.findAll().stream().filter(sub -> sub.getProfessor().equals(professor)).forEach(subjectRepository::delete);
         professor.setSubjects(null);
         professorRepository.delete(professor);

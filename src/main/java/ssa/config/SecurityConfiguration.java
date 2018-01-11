@@ -29,7 +29,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .defaultSuccessUrl("/divide", true)
                 .usernameParameter("name")
                 .passwordParameter("password")
-               // .failureForwardUrl("/login?errror=wrong username")
+                //.failureForwardUrl("/login?error")
                 .permitAll()
 
                 .and()

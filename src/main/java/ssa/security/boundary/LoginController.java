@@ -21,6 +21,10 @@ public class LoginController {
    @Autowired
    SubjectRepository subjectRepository;
 
+    /**
+     * returns login page
+     * @param customerror message to be printed
+     */
     @RequestMapping(value={"/","/login"}, method = RequestMethod.GET)
     public String login(@RequestParam Optional<String> customerror, Model model){
         String errorS;
@@ -34,6 +38,9 @@ public class LoginController {
     }
 
 
+    /**
+     * redirects to correct views according to status of currentUser (student-> studentController, professor -> professorController)
+     */
     @RequestMapping("/divide")
     public String divide(Model model,Authentication authentication){
         CurrentUser currentUser = getCurrentUser(authentication);

@@ -1,5 +1,6 @@
 package ssa.boundary;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import ssa.domain.*;
 import ssa.service.solver.Result;
 import ssa.security.domain.CurrentUser;
@@ -35,14 +36,9 @@ public class ProfController {
     @Autowired
     private StudentService studentService;
 
-
-
-    @RequestMapping(value="/")
-    public String index (Model model ) {
-        return "index";
-    }
-
-
+    /**
+     * Overview of all subjects which the currentUser (Professor) owns
+     */
     @RequestMapping(value="/professor")
     public String professorOverview(Model model, Authentication authentication){
        // Professor foundProf = professorRepository.findByName("profName");
@@ -52,9 +48,14 @@ public class ProfController {
         return "professor";
     }
 
+    /**
+     * Overview of specifics of one subject
+     */
+    @PreAuthorize("@currentUserDetailsService.canAccessUser(principal, ${subject.professor.name})")
     @RequestMapping(value = "/professor/subject", method = {RequestMethod.POST, RequestMethod.GET})
-    public String showSubject(@RequestParam int id, Model model){
+    public String showSubject(@RequestParam int id, Model model, Authentication authentication){
         Subject subject = subjectRepository.findOne(id);
+        canAccess(subject.getProfessor().getName(),authentication);
         if (!subject.isReleased()) {
             return "redirect:/professor/subject/add?id=" + id ;
         }
@@ -63,47 +64,25 @@ public class ProfController {
     }
 
     @RequestMapping(value = "/professor/subject/removeStudent", method =  RequestMethod.POST)
-    public String removeStudent(@RequestParam int id, Model model, Authentication authentication){
-        Student student = studentRepository.getOne(id);
-        int subjectId = student.getSubject().getId();
-        studentService.removeStudent(student);
+    public String removeStudent(@RequestParam("id") int studentId, Model model, Authentication authentication){
+        Subject subject = studentRepository.getOne(studentId).getSubject();
+        canAccess(subject.getProfessor().getName(),authentication);
+        int subjectId = subject.getId();
+        studentService.removeStudent(studentId);
         return "redirect:/professor/subject?id=" + subjectId;
     }
 
     @RequestMapping(value="/professor/subject/remove", method = RequestMethod.POST)
     public String removeSubject(@RequestParam int id,Authentication authentication, Model model){
-        String currentName = getCurrentUser(authentication).getName();
-        Professor professor = professorRepository.findByName(currentName);
-        subjectService.removeSubject(subjectRepository.findOne(id));
+        canAccess(id, authentication);
+        subjectService.removeSubject(id);
         return "redirect:/professor";
     }
 
     @RequestMapping(value="/professor/subject/resolve", method = RequestMethod.POST)
-    public void resolveSubject(@RequestParam("id") int subjectId, Model model, HttpServletResponse response){
-        Subject subject = subjectRepository.findOne(subjectId);
-        Result result = subject.resolve();
-        //handle file
-        String fileName = "result_" + subject.getName() + ".csv";
-        File resultFile = new File(fileName);
-        //create file
-        try(PrintWriter out = new PrintWriter(resultFile)){//try with resource -> flush automatic
-            out.print(result.toString());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        //download file
-        try(InputStream in = new FileInputStream(resultFile)){
-            response.setContentType("text/csv");
-            response.addHeader("Content-Disposition", "attachment; filename=" + fileName );
-            FileCopyUtils.copy(in, response.getOutputStream());
-
-            //delete file
-            resultFile.delete();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void resolveSubject(@RequestParam("id") int subjectId, Model model, HttpServletResponse response,Authentication authentication){
+        canAccess(subjectRepository.getOne(subjectId).getProfessor().getName(),authentication);
+        subjectService.resolveSubject(subjectId, response);
     }
 
 
@@ -126,48 +105,59 @@ public class ProfController {
 
 
     @RequestMapping(value="/professor/subject/add/newTopic", method = {RequestMethod.POST,RequestMethod.GET})
-    public String addTopic(@RequestParam("topic") String topic,@RequestParam int id, Model model){
-        //if(topic.charAt(0) == ',')
-        //topic = topic.substring(1);
-        Subject subject = subjectRepository.getOne(id).addTopic(topic);
-        subjectRepository.save(subject);
+    public String addTopic(@RequestParam("topic") String topic,@RequestParam int id, Model model,Authentication authentication){
+        canAccess(id, authentication);
+        subjectService.addTopic(id, topic);
         return "redirect:/professor/subject/add?id=" + id;
     }
 
     @RequestMapping(value="/professor/subject/add/release", method = RequestMethod.POST )
-    public String release(@RequestParam int id, Model model){
-        Subject subject = subjectRepository.findOne(id);
-        subject.release();
-        subjectRepository.save(subject);
+    public String release(@RequestParam int id, Model model, Authentication authentication){
+        canAccess(id, authentication);
+        subjectService.releaseSubject(id);
         return "redirect:/professor";
     }
 
     @RequestMapping(value="/professor/subject/add/removeTopic", method = RequestMethod.POST)
-    public String deleteTopic(@RequestParam String topic,@RequestParam("id") int subjectId, Model model){
-        Subject subject = subjectRepository.getOne(subjectId).removeTopic(topic); //because not index was used for deletion, multiple entries get deleted on the first found instance
-        subjectRepository.save(subject);
+    public String deleteTopic(@RequestParam String topic,@RequestParam("id") int subjectId, Model model,Authentication authentication){
+        Subject subject = subjectRepository.getOne(subjectId);
+        subjectService.removeTopic(subjectId, topic);
         return "redirect:/professor/subject/add?id=" + subjectId;
     }
 
     @RequestMapping(value="/professor/subject/add/newName", method = RequestMethod.POST )
     public String addSubjectName(@RequestParam String name,@RequestParam Optional<String> password, Model model,Authentication authentication){
-        Professor professor = professorRepository.findByName(getCurrentUser(authentication).getName());
-        Subject subject = null;
         int id = 0;
         if(subjectRepository.getByName(name) == null){
-            String passwordString = "";
-            if(password.isPresent()) passwordString = password.get();
-            subject = new Subject().addProfessor(professor).addName(name).addUnhashedPassword(passwordString);
-            //subject.setHashedPassword("$2a$10$a3H7CjsW6PZzHLcNRH0clOXlyaYE9dVapHiPhQifEw5I2STUI3HV2"); //pw
-            subjectRepository.save(subject);
-            professor.addSubject(subject);
-           //professorRepository.save(professor);
-            id = subject.getId();
+            Professor professor = professorRepository.findByName(getCurrentUser(authentication).getName());
+            id = subjectService.newSubject(name,password,professor).getId();
         }
-
         return "redirect:/professor/subject/add?id=" + id ;
     }
 
+    private void canAccess(int subjectId, Authentication authentication){
+        Subject subject = subjectRepository.getOne(subjectId);
+        canAccess(subject.getProfessor().getName(), authentication);
+    }
+
+    /**
+     * Breaks program if logged in user is not the owner of th processed data. Supposed to happen, if a user tries
+     * to access data of another user without permission (direct via URL).
+     * @param professorName name of professor, who is the owner of processed data
+     * @throws RuntimeException
+     */
+    private void canAccess(String professorName,Authentication authentication){
+        if(!professorName.equals(getCurrentUser(authentication).getName())){
+            System.out.println("verboten");
+           throw new RuntimeException("Entry forbidden, because owner and current user don`t match");
+        }
+    }
+
+    /**
+     * Returns currently logged in user (see config/SecurityConfiguration and /security/ -> CurrentUser + CurrentUserDetailsService
+     * @param authentication
+     * @return
+     */
     private CurrentUser getCurrentUser(Authentication authentication){
         CurrentUser currentUser = (CurrentUser)authentication.getPrincipal();
         return currentUser;
