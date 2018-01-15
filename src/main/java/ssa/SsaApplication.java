@@ -18,6 +18,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @Author Lukas Balzereit
+ */
+
 @SpringBootApplication
 //@EnableConfigurationProperties
 public class SsaApplication implements ApplicationRunner {
@@ -30,6 +34,7 @@ public class SsaApplication implements ApplicationRunner {
 
 	public static void main(String[] args) {
 		List<String> argsList = new ArrayList<>(Arrays.asList(args));
+
 		if(argsList.contains("--help")){
 			System.out.println("--help shows this page, breaks boot of application");
 			System.out.println("--list lists all professors(as Logger.info), boots anyway");
@@ -65,6 +70,7 @@ public class SsaApplication implements ApplicationRunner {
 	 */
 	private static boolean listContainsSubstring(List<String> list, String string){
 			return list.stream()
+					.filter(arg -> arg.length()>=string.length())
 					.map(arg -> arg.substring(0,string.length()))
 					.filter(arg -> arg.equals(string))
 					.findAny().isPresent();

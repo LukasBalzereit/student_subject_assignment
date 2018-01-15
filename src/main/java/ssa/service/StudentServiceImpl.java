@@ -20,9 +20,15 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public void addStudent(StudentForm form) {
+        Student existStudent = studentRepository.getByName(form.getName());
         Subject subject = subjectRepository.findOne(form.getSubjectId());
-        Student student = new Student(form, subject);
-        studentRepository.save(student);
-        subject.addStudent(student);
+        if( (existStudent == null) || (!existStudent.getSubject().equals(subject)) ) {
+            Student student = new Student(form, subject);
+            studentRepository.save(student);
+            subject.addStudent(student);
+        } else {
+            existStudent.setRatings(form.getRatings());
+            studentRepository.save(existStudent);
+        }
     }
 }

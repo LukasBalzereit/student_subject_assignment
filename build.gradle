@@ -16,7 +16,7 @@ apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 
 group = 'ssa.ssa'
-version = '0.1.1'
+version = '1.0.1'
 sourceCompatibility = 1.8
 
 repositories {
